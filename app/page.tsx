@@ -85,16 +85,54 @@ export default function SportsPage() {
       if (selectedSport !== "all" && game.sport_key !== selectedSport) {
         return false
       }
-      return true
-    })
-  }, [games, selectedSport])
 
-  const hasOddsInRange = (game: Game) => {
-    return game.bookmakers.some((bookmaker) =>
-      bookmaker.markets.some((market) =>
-        market.outcomes.some((outcome) => outcome.price >= oddsRange[0] && outcome.price <= oddsRange[1]),
-      ),
-    )
+      const hasOddsInRange = game.bookmakers.some((bookmaker) =>
+        bookmaker.markets.some((market) =>
+          market.outcomes.some((outcome) => outcome.price >= oddsRange[0] && outcome.price <= oddsRange[1]),
+        ),
+      )
+
+      return hasOddsInRange
+    })
+  }, [games, selectedSport, oddsRange])
+
+  const formatGameTime = (commenceTime: string) => {
+    const gameDate = new Date(commenceTime)
+    const now = new Date()
+
+    // Check if game is in the past
+    if (gameDate < now) {
+      return `Started at ${gameDate.toLocaleString(undefined, {
+        hour: "numeric",
+        minute: "2-digit",
+        timeZoneName: "short",
+      })}`
+    }
+
+    // Check if game is today
+    const isToday =
+      gameDate.getDate() === now.getDate() &&
+      gameDate.getMonth() === now.getMonth() &&
+      gameDate.getFullYear() === now.getFullYear()
+
+    if (isToday) {
+      return gameDate.toLocaleString(undefined, {
+        hour: "numeric",
+        minute: "2-digit",
+        timeZoneName: "short",
+      })
+    }
+
+    // Future date (not today)
+    return gameDate.toLocaleString(undefined, {
+      weekday: "short",
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+      hour: "numeric",
+      minute: "2-digit",
+      timeZoneName: "short",
+    })
   }
 
   if (loading) {
@@ -186,24 +224,15 @@ export default function SportsPage() {
 
         <div className="grid grid-cols-1 gap-6">
           {filteredGames.map((game) => {
-            const inRange = hasOddsInRange(game)
             return (
-              <Card
-                key={game.id}
-                className={`hover:shadow-lg transition-shadow ${!inRange ? "opacity-40 pointer-events-none" : ""}`}
-              >
+              <Card key={game.id} className="hover:shadow-lg transition-shadow">
                 <CardHeader>
                   <div className="flex items-start justify-between gap-4 flex-wrap">
                     <div>
                       <CardTitle className="text-2xl mb-1">
                         {game.away_team} @ {game.home_team}
                       </CardTitle>
-                      <CardDescription>
-                        {new Date(game.commence_time).toLocaleString(undefined, {
-                          dateStyle: "medium",
-                          timeStyle: "short",
-                        })}
-                      </CardDescription>
+                      <CardDescription>{formatGameTime(game.commence_time)}</CardDescription>
                     </div>
                     <Badge variant="outline">{game.sport_title}</Badge>
                   </div>
