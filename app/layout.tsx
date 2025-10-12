@@ -27,7 +27,7 @@ export const metadata: Metadata = {
     siteName: "Longshot",
     images: [
       {
-        url: "https://looongshot.vercel.app/og-image.png",
+        url: "https://looongshot.vercel.app/og_image.png",
         width: 1200,
         height: 630,
         alt: "Longshot Odds Dashboard",
@@ -41,12 +41,12 @@ export const metadata: Metadata = {
     title: "Longshot — Live Sports Odds & Betting Lines",
     description:
       "Real-time odds and spreads for every major sport. Know before you bet.",
-    images: ["https://looongshot.vercel.app/og-image.png"],
+    images: ["https://looongshot.vercel.app/og_image.png"],
     creator: "@alexgilbertson",
   },
   icons: {
     icon: "/favicon.ico",
-    apple: "/og-image.png",
+    apple: "/og_image.png",
   },
 };
 
