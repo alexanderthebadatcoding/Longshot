@@ -60,8 +60,8 @@ export default function RootLayout({
       <body className={`font-sans ${GeistSans.variable} ${GeistMono.variable}`}>
         {children}
         <Analytics />
-        <footer className="pt-6 pb-8 text-center bg-zinc-800">
-          <p className="text-sm text-white">
+        <footer className="flex items-center justify-center pt-6 pb-8 text-center bg-zinc-800">
+          <p className="text-sm text-white text-pretty">
             Please bet responsibly and send me a few bucks if you hit the big
             one.
           </p>

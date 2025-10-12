@@ -319,7 +319,7 @@ export default function SportsPage() {
                     awayOutcome.point > 0
                       ? "+" + awayOutcome.point
                       : awayOutcome.point;
-                  displayName = `${game.away_team} (${point})`;
+                  displayName = `${game.away_team.split(" ").pop()} (${point})`;
                   displayOdds =
                     (awayOutcome.price > 0 ? "+" : "") + awayOutcome.price;
                   subtitle = `${game.away_team} @ ${game.home_team}`;
