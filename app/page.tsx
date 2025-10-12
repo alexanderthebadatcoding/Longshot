@@ -306,7 +306,7 @@ export default function SportsPage() {
                   displayName = game.away_team;
                   displayOdds =
                     (awayOutcome.price > 0 ? "+" : "") + awayOutcome.price;
-                  subtitle = `${game.away_team} @ ${game.home_team} (${displayOdds})`;
+                  subtitle = `${game.away_team} @ ${game.home_team} `;
                 }
               } else if (market.key === "spreads") {
                 marketType = "SPREAD";
@@ -315,14 +315,14 @@ export default function SportsPage() {
                   (o) => o.name === game.away_team
                 );
                 if (awayOutcome && awayOutcome.point !== undefined) {
-                  displayName = game.away_team;
                   const point =
                     awayOutcome.point > 0
                       ? "+" + awayOutcome.point
                       : awayOutcome.point;
+                  displayName = `${game.away_team} (${point})`;
                   displayOdds =
                     (awayOutcome.price > 0 ? "+" : "") + awayOutcome.price;
-                  subtitle = `${game.away_team} @ ${game.home_team} (${point})`;
+                  subtitle = `${game.away_team} @ ${game.home_team}`;
                 }
               } else if (market.key === "totals") {
                 marketType = "TOTALS";
