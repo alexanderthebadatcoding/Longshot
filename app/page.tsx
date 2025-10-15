@@ -67,7 +67,6 @@ interface Odds {
   moneyline?: MoneylineOdds;
   pointSpread?: SpreadOdds;
   total?: TotalOdds;
-  // Soccer-specific fields
   homeTeamOdds?: SoccerTeamOdds;
   awayTeamOdds?: SoccerTeamOdds;
   drawOdds?: SoccerDrawOdds;
@@ -154,7 +153,6 @@ export default function SportsPage() {
           throw new Error("No events data returned");
         }
 
-        // Log odds data for each event
         data.events.forEach((event, index) => {
           console.log(`Event ${index}:`, event.name);
           console.log(`  Competitions:`, event.competitions?.length || 0);
@@ -190,7 +188,6 @@ export default function SportsPage() {
         return false;
       }
 
-      // For soccer, find ESPN BET odds (provider id: "58") which has moneyLine
       let odds = competition.odds[0];
       if (isSoccer) {
         const espnBetOdds = competition.odds.find(
@@ -203,11 +200,9 @@ export default function SportsPage() {
 
       console.log(`Event ${event.name} odds:`, odds);
 
-      // Check if any odds fall within the range
       let hasMatchingOdds = false;
 
       if (isSoccer && odds.homeTeamOdds && odds.awayTeamOdds) {
-        // Soccer format
         hasMatchingOdds = Boolean(
           (odds.awayTeamOdds.moneyLine &&
             parseOddsValue(odds.awayTeamOdds.moneyLine) >= oddsRange[0] &&
@@ -220,16 +215,13 @@ export default function SportsPage() {
               parseOddsValue(odds.drawOdds.moneyLine) <= oddsRange[1])
         );
       } else {
-        // Standard American sports format
         hasMatchingOdds = Boolean(
-          // Check moneyline
           (odds.moneyline?.home?.close?.odds &&
             parseOddsValue(odds.moneyline.home.close.odds) >= oddsRange[0] &&
             parseOddsValue(odds.moneyline.home.close.odds) <= oddsRange[1]) ||
             (odds.moneyline?.away?.close?.odds &&
               parseOddsValue(odds.moneyline.away.close.odds) >= oddsRange[0] &&
               parseOddsValue(odds.moneyline.away.close.odds) <= oddsRange[1]) ||
-            // Check spread
             (odds.pointSpread?.home?.close?.odds &&
               parseOddsValue(odds.pointSpread.home.close.odds) >=
                 oddsRange[0] &&
@@ -240,7 +232,6 @@ export default function SportsPage() {
                 oddsRange[0] &&
               parseOddsValue(odds.pointSpread.away.close.odds) <=
                 oddsRange[1]) ||
-            // Check totals
             (odds.total?.over?.close?.odds &&
               parseOddsValue(odds.total.over.close.odds) >= oddsRange[0] &&
               parseOddsValue(odds.total.over.close.odds) <= oddsRange[1]) ||
@@ -262,7 +253,6 @@ export default function SportsPage() {
     { sport: "football", league: "nfl", title: "NFL" },
     { sport: "football", league: "college-football", title: "NCAAF" },
     { sport: "basketball", league: "nba", title: "NBA" },
-    // { sport: "basketball", league: "mens-college-basketball", title: "NCAAB" },
     { sport: "baseball", league: "mlb", title: "MLB" },
     { sport: "hockey", league: "nhl", title: "NHL" },
     { sport: "soccer", league: "eng.1", title: "EPL" },
@@ -413,7 +403,6 @@ export default function SportsPage() {
             const competition = event.competitions[0];
             if (!competition?.odds || competition.odds.length === 0) return [];
 
-            // For soccer, find ESPN BET odds (provider id: "58") which has moneyLine
             const isSoccer = isSoccerLeague(
               selectedSport.sport,
               selectedSport.league
@@ -430,151 +419,205 @@ export default function SportsPage() {
 
             const items: React.ReactElement[] = [];
 
-            // Soccer format
+            // Soccer format - show moneyline and over/under
             if (isSoccer && odds.awayTeamOdds && odds.homeTeamOdds) {
-              // Away Team Moneyline
-              if (odds.awayTeamOdds.moneyLine) {
-                const oddsValue = parseOddsValue(odds.awayTeamOdds.moneyLine);
-                if (oddsValue >= oddsRange[0] && oddsValue <= oddsRange[1]) {
-                  items.push(
-                    <div
-                      key={`${event.id}-moneyline-away`}
-                      className="bg-zinc-950 border border-zinc-800 rounded-lg p-4 hover:border-zinc-700 transition-colors"
-                    >
-                      <div className="flex items-start justify-between gap-4">
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-3 mb-1">
-                            <Badge
-                              variant="outline"
-                              className="border-blue-700 text-blue-400 text-xs uppercase shrink-0"
-                            >
-                              MONEYLINE
-                            </Badge>
-                            <Badge
-                              variant="outline"
-                              className="border-zinc-700 text-gray-500 text-xs shrink-0"
-                            >
-                              {odds.provider.name}
-                            </Badge>
-                          </div>
-                          <h3 className="text-xl font-bold text-white mb-1 truncate">
-                            {isMobile
-                              ? odds.awayTeamOdds.team.abbreviation
-                              : odds.awayTeamOdds.team.displayName}
-                          </h3>
-                          <p className="text-sm text-gray-500 mb-2">
-                            {event.name}
-                          </p>
-                          <p className="text-xs text-gray-600">
-                            {formatGameTime(event.date)}
-                          </p>
-                        </div>
-                        <div className="text-right shrink-0">
-                          <div className="text-2xl font-bold text-white">
-                            {oddsValue > 0 ? "+" : ""}
-                            {oddsValue}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  );
-                }
-              }
+              const awayML = odds.awayTeamOdds.moneyLine
+                ? parseOddsValue(odds.awayTeamOdds.moneyLine)
+                : null;
+              const homeML = odds.homeTeamOdds.moneyLine
+                ? parseOddsValue(odds.homeTeamOdds.moneyLine)
+                : null;
+              const drawML = odds.drawOdds?.moneyLine
+                ? parseOddsValue(odds.drawOdds.moneyLine)
+                : null;
+              const overOdds = odds.total?.over?.close?.odds
+                ? parseOddsValue(odds.total.over.close.odds)
+                : null;
+              const underOdds = odds.total?.under?.close?.odds
+                ? parseOddsValue(odds.total.under.close.odds)
+                : null;
 
-              // Home Team Moneyline
-              if (odds.homeTeamOdds.moneyLine) {
-                const oddsValue = parseOddsValue(odds.homeTeamOdds.moneyLine);
-                if (oddsValue >= oddsRange[0] && oddsValue <= oddsRange[1]) {
-                  items.push(
-                    <div
-                      key={`${event.id}-moneyline-home`}
-                      className="bg-zinc-950 border border-zinc-800 rounded-lg p-4 hover:border-zinc-700 transition-colors"
-                    >
-                      <div className="flex items-start justify-between gap-4">
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-3 mb-1">
-                            <Badge
-                              variant="outline"
-                              className="border-blue-700 text-blue-400 text-xs uppercase shrink-0"
-                            >
-                              MONEYLINE
-                            </Badge>
-                            <Badge
-                              variant="outline"
-                              className="border-zinc-700 text-gray-500 text-xs shrink-0"
-                            >
-                              {odds.provider.name}
-                            </Badge>
-                          </div>
-                          <h3 className="text-xl font-bold text-white mb-1 truncate">
-                            {isMobile
-                              ? odds.homeTeamOdds.team.abbreviation
-                              : odds.homeTeamOdds.team.displayName}
-                          </h3>
-                          <p className="text-sm text-gray-500 mb-2">
-                            {event.name}
-                          </p>
-                          <p className="text-xs text-gray-600">
-                            {formatGameTime(event.date)}
-                          </p>
-                        </div>
-                        <div className="text-right shrink-0">
-                          <div className="text-2xl font-bold text-white">
-                            {oddsValue > 0 ? "+" : ""}
-                            {oddsValue}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  );
-                }
-              }
+              const showCard =
+                (awayML && awayML >= oddsRange[0] && awayML <= oddsRange[1]) ||
+                (homeML && homeML >= oddsRange[0] && homeML <= oddsRange[1]) ||
+                (drawML && drawML >= oddsRange[0] && drawML <= oddsRange[1]) ||
+                (overOdds &&
+                  overOdds >= oddsRange[0] &&
+                  overOdds <= oddsRange[1]) ||
+                (underOdds &&
+                  underOdds >= oddsRange[0] &&
+                  underOdds <= oddsRange[1]);
 
-              // Draw
-              if (odds.drawOdds?.moneyLine) {
-                const oddsValue = parseOddsValue(odds.drawOdds.moneyLine);
-                if (oddsValue >= oddsRange[0] && oddsValue <= oddsRange[1]) {
-                  items.push(
-                    <div
-                      key={`${event.id}-draw`}
-                      className="bg-zinc-950 border border-zinc-800 rounded-lg p-4 hover:border-zinc-700 transition-colors"
-                    >
-                      <div className="flex items-start justify-between gap-4">
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-3 mb-1">
-                            <Badge
-                              variant="outline"
-                              className="border-green-700 text-green-400 text-xs uppercase shrink-0"
-                            >
-                              DRAW
-                            </Badge>
-                            <Badge
-                              variant="outline"
-                              className="border-zinc-700 text-gray-500 text-xs shrink-0"
-                            >
-                              {odds.provider.name}
-                            </Badge>
-                          </div>
-                          <h3 className="text-xl font-bold text-white mb-1 truncate">
-                            Draw
-                          </h3>
-                          <p className="text-sm text-gray-500 mb-2">
-                            {event.name}
+              if (showCard) {
+                items.push(
+                  <div
+                    key={`${event.id}-soccer-odds`}
+                    className="bg-zinc-950 border border-zinc-800 rounded-lg p-4 hover:border-zinc-700 transition-colors"
+                  >
+                    <div className="mb-4">
+                      <div className="flex items-center gap-2 mb-2">
+                        <Badge
+                          variant="outline"
+                          className="border-zinc-700 text-gray-500 text-xs shrink-0"
+                        >
+                          {odds.provider.name}
+                        </Badge>
+                      </div>
+                      <p className="text-sm text-gray-500 mb-1">{event.name}</p>
+                      <p className="text-xs text-gray-600">
+                        {formatGameTime(event.date)}
+                      </p>
+                    </div>
+
+                    {/* Moneyline */}
+                    <div className="mb-4">
+                      <p className="text-xs font-semibold text-gray-400 mb-2 uppercase">
+                        Moneyline
+                      </p>
+                      <div className="grid grid-cols-3 gap-2">
+                        <div
+                          className={`rounded p-3 text-center ${
+                            awayML !== null &&
+                            awayML >= oddsRange[0] &&
+                            awayML <= oddsRange[1]
+                              ? "bg-zinc-900"
+                              : "bg-zinc-800 opacity-50"
+                          }`}
+                        >
+                          <p className="text-xs text-gray-400 mb-1">
+                            {odds.awayTeamOdds.team.abbreviation}
                           </p>
-                          <p className="text-xs text-gray-600">
-                            {formatGameTime(event.date)}
+                          <p
+                            className={`text-lg font-bold ${
+                              awayML !== null &&
+                              awayML >= oddsRange[0] &&
+                              awayML <= oddsRange[1]
+                                ? "text-white"
+                                : "text-gray-500"
+                            }`}
+                          >
+                            {awayML !== null
+                              ? `${awayML > 0 ? "+" : ""}${awayML}`
+                              : "—"}
                           </p>
                         </div>
-                        <div className="text-right shrink-0">
-                          <div className="text-2xl font-bold text-white">
-                            {oddsValue > 0 ? "+" : ""}
-                            {oddsValue}
-                          </div>
+
+                        <div
+                          className={`rounded p-3 text-center ${
+                            drawML !== null &&
+                            drawML >= oddsRange[0] &&
+                            drawML <= oddsRange[1]
+                              ? "bg-zinc-900"
+                              : "bg-zinc-800 opacity-50"
+                          }`}
+                        >
+                          <p className="text-xs text-gray-400 mb-1">Draw</p>
+                          <p
+                            className={`text-lg font-bold ${
+                              drawML !== null &&
+                              drawML >= oddsRange[0] &&
+                              drawML <= oddsRange[1]
+                                ? "text-white"
+                                : "text-gray-500"
+                            }`}
+                          >
+                            {drawML !== null
+                              ? `${drawML > 0 ? "+" : ""}${drawML}`
+                              : "—"}
+                          </p>
+                        </div>
+
+                        <div
+                          className={`rounded p-3 text-center ${
+                            homeML !== null &&
+                            homeML >= oddsRange[0] &&
+                            homeML <= oddsRange[1]
+                              ? "bg-zinc-900"
+                              : "bg-zinc-800 opacity-50"
+                          }`}
+                        >
+                          <p className="text-xs text-gray-400 mb-1">
+                            {odds.homeTeamOdds.team.abbreviation}
+                          </p>
+                          <p
+                            className={`text-lg font-bold ${
+                              homeML !== null &&
+                              homeML >= oddsRange[0] &&
+                              homeML <= oddsRange[1]
+                                ? "text-white"
+                                : "text-gray-500"
+                            }`}
+                          >
+                            {homeML !== null
+                              ? `${homeML > 0 ? "+" : ""}${homeML}`
+                              : "—"}
+                          </p>
                         </div>
                       </div>
                     </div>
-                  );
-                }
+
+                    {/* Over/Under */}
+                    {(overOdds !== null || underOdds !== null) && (
+                      <div>
+                        <p className="text-xs font-semibold text-gray-400 mb-2 uppercase">
+                          Over/Under{" "}
+                          {odds.total?.over?.close?.line?.replace("o", "")}
+                        </p>
+                        <div className="grid grid-cols-2 gap-2">
+                          <div
+                            className={`rounded p-3 text-center ${
+                              overOdds !== null &&
+                              overOdds >= oddsRange[0] &&
+                              overOdds <= oddsRange[1]
+                                ? "bg-zinc-900"
+                                : "bg-zinc-800 opacity-50"
+                            }`}
+                          >
+                            <p className="text-xs text-gray-400 mb-1">Over</p>
+                            <p
+                              className={`text-lg font-bold ${
+                                overOdds !== null &&
+                                overOdds >= oddsRange[0] &&
+                                overOdds <= oddsRange[1]
+                                  ? "text-white"
+                                  : "text-gray-500"
+                              }`}
+                            >
+                              {overOdds !== null
+                                ? `${overOdds > 0 ? "+" : ""}${overOdds}`
+                                : "—"}
+                            </p>
+                          </div>
+
+                          <div
+                            className={`rounded p-3 text-center ${
+                              underOdds !== null &&
+                              underOdds >= oddsRange[0] &&
+                              underOdds <= oddsRange[1]
+                                ? "bg-zinc-900"
+                                : "bg-zinc-800 opacity-50"
+                            }`}
+                          >
+                            <p className="text-xs text-gray-400 mb-1">Under</p>
+                            <p
+                              className={`text-lg font-bold ${
+                                underOdds !== null &&
+                                underOdds >= oddsRange[0] &&
+                                underOdds <= oddsRange[1]
+                                  ? "text-white"
+                                  : "text-gray-500"
+                              }`}
+                            >
+                              {underOdds !== null
+                                ? `${underOdds > 0 ? "+" : ""}${underOdds}`
+                                : "—"}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                );
               }
 
               return items;
@@ -604,7 +647,7 @@ export default function SportsPage() {
                   >
                     <div className="flex items-start justify-between gap-4">
                       <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-3 mb-1">
+                        <div className="flex items-center gap-3 mb-2">
                           <Badge
                             variant="outline"
                             className="border-blue-700 text-blue-400 text-xs uppercase shrink-0"
@@ -618,7 +661,7 @@ export default function SportsPage() {
                             {odds.provider.name}
                           </Badge>
                         </div>
-                        <h3 className="text-xl font-bold text-white mb-1 truncate">
+                        <h3 className="text-xl font-bold text-white mb-2 truncate">
                           {isMobile
                             ? awayTeam.team.abbreviation
                             : awayTeam.team.name}
@@ -631,8 +674,58 @@ export default function SportsPage() {
                         </p>
                       </div>
                       <div className="text-right shrink-0">
-                        <div className="text-2xl font-bold text-white">
+                        <div className="text-3xl font-bold text-white">
                           {odds.moneyline.away.close.odds}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                );
+              }
+            }
+
+            if (
+              odds.moneyline?.home?.close?.odds &&
+              odds.moneyline.home.close.odds !== "OFF"
+            ) {
+              const oddsValue = parseOddsValue(odds.moneyline.home.close.odds);
+              if (oddsValue >= oddsRange[0] && oddsValue <= oddsRange[1]) {
+                items.push(
+                  <div
+                    key={`${event.id}-moneyline-home`}
+                    className="bg-zinc-950 border border-zinc-800 rounded-lg p-4 hover:border-zinc-700 transition-colors"
+                  >
+                    <div className="flex items-start justify-between gap-4">
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-3 mb-2">
+                          <Badge
+                            variant="outline"
+                            className="border-blue-700 text-blue-400 text-xs uppercase shrink-0"
+                          >
+                            MONEYLINE
+                          </Badge>
+                          <Badge
+                            variant="outline"
+                            className="border-zinc-700 text-gray-500 text-xs shrink-0"
+                          >
+                            {odds.provider.name}
+                          </Badge>
+                        </div>
+                        <h3 className="text-xl font-bold text-white mb-2 truncate">
+                          {isMobile
+                            ? homeTeam.team.abbreviation
+                            : homeTeam.team.name}
+                        </h3>
+                        <p className="text-sm text-gray-500 mb-2">
+                          {event.name}
+                        </p>
+                        <p className="text-xs text-gray-600">
+                          {formatGameTime(event.date)}
+                        </p>
+                      </div>
+                      <div className="text-right shrink-0">
+                        <div className="text-3xl font-bold text-white">
+                          {odds.moneyline.home.close.odds}
                         </div>
                       </div>
                     </div>
@@ -657,7 +750,7 @@ export default function SportsPage() {
                   >
                     <div className="flex items-start justify-between gap-4">
                       <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-3 mb-1">
+                        <div className="flex items-center gap-3 mb-2">
                           <Badge
                             variant="outline"
                             className="border-purple-700 text-purple-400 text-xs uppercase shrink-0"
@@ -671,11 +764,11 @@ export default function SportsPage() {
                             {odds.provider.name}
                           </Badge>
                         </div>
-                        <h3 className="text-xl font-bold text-white mb-1 truncate">
+                        <h3 className="text-xl font-bold text-white mb-2 truncate">
                           {isMobile
                             ? awayTeam.team.abbreviation
                             : awayTeam.team.name}{" "}
-                          ({odds.pointSpread.away.close.line})
+                          {odds.pointSpread.away.close.line}
                         </h3>
                         <p className="text-sm text-gray-500 mb-2">
                           {event.name}
@@ -685,8 +778,61 @@ export default function SportsPage() {
                         </p>
                       </div>
                       <div className="text-right shrink-0">
-                        <div className="text-2xl font-bold text-white">
+                        <div className="text-3xl font-bold text-white">
                           {odds.pointSpread.away.close.odds}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                );
+              }
+            }
+
+            if (
+              odds.pointSpread?.home?.close?.line &&
+              odds.pointSpread.home.close.odds !== "OFF"
+            ) {
+              const oddsValue = parseOddsValue(
+                odds.pointSpread.home.close.odds
+              );
+              if (oddsValue >= oddsRange[0] && oddsValue <= oddsRange[1]) {
+                items.push(
+                  <div
+                    key={`${event.id}-spread-home`}
+                    className="bg-zinc-950 border border-zinc-800 rounded-lg p-4 hover:border-zinc-700 transition-colors"
+                  >
+                    <div className="flex items-start justify-between gap-4">
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-3 mb-2">
+                          <Badge
+                            variant="outline"
+                            className="border-purple-700 text-purple-400 text-xs uppercase shrink-0"
+                          >
+                            SPREAD
+                          </Badge>
+                          <Badge
+                            variant="outline"
+                            className="border-zinc-700 text-gray-500 text-xs shrink-0"
+                          >
+                            {odds.provider.name}
+                          </Badge>
+                        </div>
+                        <h3 className="text-xl font-bold text-white mb-2 truncate">
+                          {isMobile
+                            ? homeTeam.team.abbreviation
+                            : homeTeam.team.name}{" "}
+                          {odds.pointSpread.home.close.line}
+                        </h3>
+                        <p className="text-sm text-gray-500 mb-2">
+                          {event.name}
+                        </p>
+                        <p className="text-xs text-gray-600">
+                          {formatGameTime(event.date)}
+                        </p>
+                      </div>
+                      <div className="text-right shrink-0">
+                        <div className="text-3xl font-bold text-white">
+                          {odds.pointSpread.home.close.odds}
                         </div>
                       </div>
                     </div>
@@ -709,7 +855,7 @@ export default function SportsPage() {
                   >
                     <div className="flex items-start justify-between gap-4">
                       <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-3 mb-1">
+                        <div className="flex items-center gap-3 mb-2">
                           <Badge
                             variant="outline"
                             className="border-orange-700 text-orange-400 text-xs uppercase shrink-0"
@@ -723,7 +869,7 @@ export default function SportsPage() {
                             {odds.provider.name}
                           </Badge>
                         </div>
-                        <h3 className="text-xl font-bold text-white mb-1 truncate">
+                        <h3 className="text-xl font-bold text-white mb-2 truncate">
                           Over {odds.total.over.close.line.replace("o", "")}
                         </h3>
                         <p className="text-sm text-gray-500 mb-2">
@@ -734,8 +880,57 @@ export default function SportsPage() {
                         </p>
                       </div>
                       <div className="text-right shrink-0">
-                        <div className="text-2xl font-bold text-white">
+                        <div className="text-3xl font-bold text-white">
                           {odds.total.over.close.odds}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                );
+              }
+            }
+
+            // Totals (Under)
+            if (
+              odds.total?.under?.close?.line &&
+              odds.total.under.close.odds !== "OFF"
+            ) {
+              const oddsValue = parseOddsValue(odds.total.under.close.odds);
+              if (oddsValue >= oddsRange[0] && oddsValue <= oddsRange[1]) {
+                items.push(
+                  <div
+                    key={`${event.id}-total-under`}
+                    className="bg-zinc-950 border border-zinc-800 rounded-lg p-4 hover:border-zinc-700 transition-colors"
+                  >
+                    <div className="flex items-start justify-between gap-4">
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-3 mb-2">
+                          <Badge
+                            variant="outline"
+                            className="border-orange-700 text-orange-400 text-xs uppercase shrink-0"
+                          >
+                            TOTALS
+                          </Badge>
+                          <Badge
+                            variant="outline"
+                            className="border-zinc-700 text-gray-500 text-xs shrink-0"
+                          >
+                            {odds.provider.name}
+                          </Badge>
+                        </div>
+                        <h3 className="text-xl font-bold text-white mb-2 truncate">
+                          Under {odds.total.under.close.line.replace("u", "")}
+                        </h3>
+                        <p className="text-sm text-gray-500 mb-2">
+                          {event.name}
+                        </p>
+                        <p className="text-xs text-gray-600">
+                          {formatGameTime(event.date)}
+                        </p>
+                      </div>
+                      <div className="text-right shrink-0">
+                        <div className="text-3xl font-bold text-white">
+                          {odds.total.under.close.odds}
                         </div>
                       </div>
                     </div>
