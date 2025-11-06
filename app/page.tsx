@@ -255,7 +255,7 @@ export default function SportsPage() {
     { sport: "basketball", league: "nba", title: "NBA" },
     // { sport: "baseball", league: "mlb", title: "MLB" },
     { sport: "hockey", league: "nhl", title: "NHL" },
-    { sport: "soccer", league: "uefa.champions", title: "UEFA" },
+    // { sport: "soccer", league: "uefa.champions", title: "UEFA" },
     { sport: "soccer", league: "eng.1", title: "EPL" },
     { sport: "soccer", league: "usa.1", title: "MLS" },
     { sport: "soccer", league: "ger.1", title: "Bundesliga" },
