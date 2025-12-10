@@ -62,7 +62,7 @@ export default function RootLayout({
         <Analytics />
         <footer className="flex items-center justify-center pt-6 pb-8 text-center bg-zinc-800">
           <p className="text-sm text-white text-pretty">
-            Please bet responsibly and send me a few bucks if you hit the big.
+            Please bet responsibly and send me a few bucks if you hit the big one. 
           </p>
         </footer>
       </body>
