@@ -457,12 +457,14 @@ export default function SportsPage() {
                   >
                     <div className="mb-4">
                       <div className="flex items-center gap-2 mb-2">
-                        <Badge
-                          variant="outline"
-                          className="border-zinc-700 text-gray-500 text-xs shrink-0"
-                        >
-                          {odds.provider.name}
-                        </Badge>
+                        {odds?.provider?.name && (
+                          <Badge
+                            variant="outline"
+                            className="border-zinc-700 text-zinc-400 text-xs shrink-0"
+                          >
+                            {odds.provider.name}
+                          </Badge>
+                        )}
                       </div>
                       <p className="text-sm text-gray-500 mb-1">{event.name}</p>
                       <p className="text-xs text-gray-600">
@@ -655,12 +657,14 @@ export default function SportsPage() {
                           >
                             MONEYLINE
                           </Badge>
-                          <Badge
-                            variant="outline"
-                            className="border-zinc-700 text-gray-500 text-xs shrink-0"
-                          >
-                            {odds.provider.name}
-                          </Badge>
+                          {odds?.provider?.name && (
+                            <Badge
+                              variant="outline"
+                              className="border-zinc-700 text-zinc-400 text-xs shrink-0"
+                            >
+                              {odds.provider.name}
+                            </Badge>
+                          )}
                         </div>
                         <h3 className="text-xl font-bold text-white mb-2 truncate">
                           {isMobile
@@ -705,12 +709,14 @@ export default function SportsPage() {
                           >
                             MONEYLINE
                           </Badge>
-                          <Badge
-                            variant="outline"
-                            className="border-zinc-700 text-gray-500 text-xs shrink-0"
-                          >
-                            {odds.provider.name}
-                          </Badge>
+                          {odds?.provider?.name && (
+                            <Badge
+                              variant="outline"
+                              className="border-zinc-700 text-zinc-400 text-xs shrink-0"
+                            >
+                              {odds.provider.name}
+                            </Badge>
+                          )}
                         </div>
                         <h3 className="text-xl font-bold text-white mb-2 truncate">
                           {isMobile
@@ -758,12 +764,14 @@ export default function SportsPage() {
                           >
                             SPREAD
                           </Badge>
-                          <Badge
-                            variant="outline"
-                            className="border-zinc-700 text-gray-500 text-xs shrink-0"
-                          >
-                            {odds.provider.name}
-                          </Badge>
+                          {odds?.provider?.name && (
+                            <Badge
+                              variant="outline"
+                              className="border-zinc-700 text-zinc-400 text-xs shrink-0"
+                            >
+                              {odds.provider.name}
+                            </Badge>
+                          )}
                         </div>
                         <h3 className="text-xl font-bold text-white mb-2 truncate">
                           {isMobile
@@ -811,12 +819,14 @@ export default function SportsPage() {
                           >
                             SPREAD
                           </Badge>
-                          <Badge
-                            variant="outline"
-                            className="border-zinc-700 text-gray-500 text-xs shrink-0"
-                          >
-                            {odds.provider.name}
-                          </Badge>
+                          {odds?.provider?.name && (
+                            <Badge
+                              variant="outline"
+                              className="border-zinc-700 text-zinc-400 text-xs shrink-0"
+                            >
+                              {odds.provider.name}
+                            </Badge>
+                          )}
                         </div>
                         <h3 className="text-xl font-bold text-white mb-2 truncate">
                           {isMobile
@@ -863,12 +873,14 @@ export default function SportsPage() {
                           >
                             TOTALS
                           </Badge>
-                          <Badge
-                            variant="outline"
-                            className="border-zinc-700 text-gray-500 text-xs shrink-0"
-                          >
-                            {odds.provider.name}
-                          </Badge>
+                          {odds?.provider?.name && (
+                            <Badge
+                              variant="outline"
+                              className="border-zinc-700 text-zinc-400 text-xs shrink-0"
+                            >
+                              {odds.provider.name}
+                            </Badge>
+                          )}
                         </div>
                         <h3 className="text-xl font-bold text-white mb-2 truncate">
                           Over {odds.total.over.close.line.replace("o", "")}
@@ -912,12 +924,14 @@ export default function SportsPage() {
                           >
                             TOTALS
                           </Badge>
-                          <Badge
-                            variant="outline"
-                            className="border-zinc-700 text-gray-500 text-xs shrink-0"
-                          >
-                            {odds.provider.name}
-                          </Badge>
+                          {odds?.provider?.name && (
+                            <Badge
+                              variant="outline"
+                              className="border-zinc-700 text-zinc-400 text-xs shrink-0"
+                            >
+                              {odds.provider.name}
+                            </Badge>
+                          )}
                         </div>
                         <h3 className="text-xl font-bold text-white mb-2 truncate">
                           Under {odds.total.under.close.line.replace("u", "")}
