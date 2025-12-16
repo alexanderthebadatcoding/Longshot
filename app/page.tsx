@@ -252,10 +252,12 @@ export default function SportsPage() {
   const availableSports = [
     { sport: "football", league: "nfl", title: "NFL" },
     { sport: "football", league: "college-football", title: "NCAAF" },
+    { sport: "basketball", league: "mens-college-basketball", title: "NCAAM" },
     { sport: "basketball", league: "nba", title: "NBA" },
     // { sport: "baseball", league: "mlb", title: "MLB" },
     { sport: "hockey", league: "nhl", title: "NHL" },
-    { sport: "soccer", league: "uefa.champions", title: "UEFA" },
+    //{ sport: "soccer", league: "uefa.champions", title: "UEFA" },
+    { sport: "soccer", league: "caf.nations", title: "CAF" },
     { sport: "soccer", league: "eng.1", title: "EPL" },
     // { sport: "soccer", league: "usa.1", title: "MLS" },
     { sport: "soccer", league: "ger.1", title: "Bundesliga" },
